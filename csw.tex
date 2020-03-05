@@ -1,0 +1,286 @@
+\documentclass[a4paper]{article}
+\usepackage{amsmath}
+\usepackage{pythonhighlight}
+
+\title{Statistical Modelling\\
+Coursework 2}
+\author{Stefan A. Obada - \textit{so1118}}
+\date{March 2020}
+\makeindex
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+	This paper solves the second Coursework available on Blackboard.
+\end{abstract}
+
+
+
+\newpage
+
+\section*{Question 1}
+
+\subsection*{a)}
+As we are working under $(FR)$ and $(SOA)$ we can solve for $\hat{\gamma}_{LSE}$ as: $\hat{\gamma}_{LSE} = (X^{T}X)^{-1}X^{T}\textbf{Y}$, where $X$ is the design matrix. In our case:
+\begin{equation*}
+X = 
+	\begin{bmatrix}
+	1 & w_{1} & x_{1} \\
+	1 & w_{2} & x_{2} \\
+	\vdots  & \vdots  & \vdots \\
+	1 & w_{n} & x_{n} 
+	\end{bmatrix}
+\end{equation*}
+
+\begin{equation*}
+X^{T}X = 
+	\begin{bmatrix}
+	n & n\overline{w} & n\overline{x} \\
+	n\overline{w} & \sum{w_{i}^2} & \sum{w_{i}x_{i}} \\
+	n\overline{x} & \sum{w_{i}x_{i}} & \sum{x_{i}^2}
+	\end{bmatrix}
+\end{equation*}
+
+Using the following 2 properties for the 3x3 matrix inverse and for $S_{ab}$ we will deduce the form of $(X^{T}X)^{-1}$ and $X^{T}\textbf{Y}$. We will skip the matrix calculation part.
+\vspace{2.5mm}
+\hrule
+\begin{equation}
+\begin{split}
+\left(\begin{array}{ccc}
+a&b&c\\
+d&e&f\\
+g&h&i
+\end{array}\right)^{-1}
+=&
+{1 \over {\rm{det()}}}
+\left(\begin{array}{rrr}
+e i - f h&-(b i - c h)&b f - c e\\
+-(d i - f g)&a i - c g&-(a f -c d)\\
+d h - e g&-(a h - b g)&a e - b d
+\end{array}\right)\\
+=&
+{1 \over {\rm{det()}}}
+\left(\begin{array}{rrr}
+a' & b' & c'\\
+d' & e' & f'\\
+g' & h' & i'
+\end{array}\right)
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+& S_{ab} = \sum_{i}{(a_{i}-\overline{a})(b_{i}-\overline{b})} = \sum{(a_{i}b_{i} - a_{i}\overline{b}-\overline{a}b_{i} + \overline{a}\overline{b})} = \\ 
+& \sum{a_{i}b_{i}} - 2n\overline{a}\overline{b} + n\overline{a}\overline{b} = \sum{a_{i}b_{i}} - n\overline{a}\overline{b}. \\ 
+& Moreover: S_{aa} = \sum{a_{i}^2} - n\overline{a}^2
+\end{split}
+\end{equation}
+\hrule
+\vspace{2.5mm}
+Therefore, we deduce:
+\begin{equation*}
+(X^{T}X)^{-1} = \frac{1}{n(S_{xx}S_{ww}-S_{xw}^2)}
+	\begin{bmatrix}
+	a' & b' & c'\\
+	d' & e' & f'\\
+	g' & h' & i'
+	\end{bmatrix}
+\end{equation*}
+
+\begin{equation*}
+X^{T}\textbf{Y} = 
+	\begin{bmatrix}
+	\overline{Y} \\
+	S_{wy} + n\overline{w}\overline{Y} \\
+	S_{xy} + n\overline{x}\overline{Y}
+	\end{bmatrix} 
+\end{equation*}
+
+\begin{equation*}
+(X^{T}X)^{-1}X^{T}\textbf{Y} = 
+	\frac{1}{n(S_{xx}S_{ww}-S_{xw}^2)}
+	\begin{bmatrix}
+	a'\overline{Y} + b'(S_{wy} + n\overline{w}\overline{Y}) + c'(S_{xy} + n\overline{x}\overline{Y}) \\
+	d'\overline{Y} + e'(S_{wy} + n\overline{w}\overline{Y}) + f'(S_{xy} + n\overline{x}\overline{Y}) \\
+	g'\overline{Y} + h'(S_{wy} + n\overline{w}\overline{Y}) + i'(S_{xy} + n\overline{x}\overline{Y}) \\
+	\end{bmatrix} 
+\end{equation*}
+Now plugging the values for $(a', b' ... i')$ (see Appendix) we find:
+
+\begin{equation*}
+\begin{split}
+\hat{\gamma}_{LSE} = & (X^{T}X)^{-1}X^{T}\textbf{Y} = \\
+	= & \frac{1}{(S_{xx}S_{ww}-S_{xw}^2)}
+	\begin{bmatrix}
+	(S_{ww}S_{wx}-S_{xw}^2)\overline{Y} - \overline{w}(S_{wy}S_{xx} - S_{wx}S_{xy}) - \overline{x}(S_{xy}S_{ww} - S_{wx}S_{xy}) \\
+	S_{wy}S_{xx} - S_{wx}S_{xy} \\
+	S_{xy}S_{ww} - S_{wx}S_{xy} \\
+	\end{bmatrix} 
+\end{split}
+\end{equation*}
+Therefore, we obtain the final estimators as:
+\begin{equation*}
+\begin{split}
+	\hat{\gamma}_{0} = & \overline{Y} - \overline{w}\hat{\gamma}_{W} - \overline{x}\hat{\gamma}_{X} \\
+	\hat{\gamma}_{W} = & \frac{S_{wy}S_{xx} - S_{wx}S_{xy}}{S_{xx}S_{ww}-S_{xw}^2} \\
+	\hat{\gamma}_{X} = & \frac{S_{xy}S_{ww} - S_{wx}S_{xy}}{S_{xx}S_{ww}-S_{xw}^2} \\
+\end{split}
+\end{equation*}
+
+\subsection*{b)}
+
+As proved in lectures, we have the following equation for $\hat{\beta}_{X}$:
+\begin{equation*}
+	\hat{\beta}_{X} = \frac{S_{xy}}{S_{xx}}
+\end{equation*}
+Therefore we can condition on $\textbf{x}-\overline{\textbf{x}}$ and $\textbf{w}-\overline{\textbf{w}}$ as it follows:
+\begin{equation*}
+\begin{split}
+	\hat{\beta}_{X} = \hat{\gamma}_{X} \Leftrightarrow & \frac{S_{xy}S_{ww} - S_{wx}S_{xy}}{S_{xx}S_{ww}-S_{xw}^2} = \frac{S_{xy}}{S_{xx}}  \Leftrightarrow \\
+	\Leftrightarrow & S_{xx}S_{xy}S_{ww}-S_{xx}S_{wx}S_{xy} = S_{xy}S_{xx}S_{ww} - S_{xw}^2S_{xy} \Leftrightarrow \\
+	\Leftrightarrow & S_{xx}=S_{wx} \Leftrightarrow (\textbf{x}-\overline{\textbf{x}}-(\textbf{w}-\overline{\textbf{w}}))^{T}(\textbf{x}-\overline{\textbf{x}})=\textbf{0} \Leftrightarrow \\
+	\Leftrightarrow & (\textbf{w}-\overline{\textbf{w}})^T(\textbf{x}-\overline{\textbf{x}}) = |(\textbf{x}-\overline{\textbf{x}})|^2
+\end{split}
+\end{equation*}
+So if given $\textbf{x}$, then $\textbf{w}-\overline{\textbf{w}}$ has to lie on a hyperplane whose normal is $\textbf{n}= \textbf{x}-\overline{\textbf{x}}$ and passes through the point $\textbf{x}-\overline{\textbf{x}}$. Note that we worked under the assumption that $S_{xy} \neq 0$, as otherwise the model would be trivial.
+
+\subsection*{c)}
+Again, as proved in lectures we have:
+\begin{equation*}
+\begin{split}
+	cov(\hat{\beta}_{X}) & = \frac{\sigma^2}{S_{xx}}\\
+	cov(\hat{\gamma}_{LSE}) & = \sigma^2(X^TX)^{-1} \Rightarrow cov(\hat{\gamma}_{X}) = \frac{\sigma^2i'}{n(S_{xx}S_{ww}-S_{xw}^2)} = \\
+	& = \frac{n\sigma^2S_{ww}}{n(S_{xx}S_{ww}-S_{xw}^2)} = \frac{\sigma^2}{S_{xx}-{S_{xw}^2}/{S_{ww}}} \\
+	& = \frac{\sigma^2}{S_{xx}} \cdot (1-\frac{S_{xw}^2}{S_{xx}S_{ww}})^{-1} \\
+\end{split}
+\end{equation*}
+\begin{itemize}
+	\item Under the condition from \textbf{1b)} we have that $S_{xx}=S_{wx}$ and therefore they will differ by a factor of: $(1-\frac{S_{xx}}{S_{ww}})^{-1}$.
+	\item $\underline{var(\hat{\gamma}_{X})<var(\hat{\beta}_{X})} \Leftrightarrow (1-\frac{S_{xw}^2}{S_{xx}S_{ww}})^{-1}<1 \Leftrightarrow 1-\frac{S_{xw}^2}{S_{xx}S_{ww}} < 0 \Leftrightarrow \\ \Leftrightarrow \underline{S_{xw}^2>S_{xx}S_{ww}}$ (since otherwise $\frac{S_{xw}^2}{S_{xx}S_{ww}}<0$ but $S_{aa}>0$). However this cannot ever happen since by letting $\textbf{u}=\textbf{x}-\overline{\textbf{x}}$ and $\textbf{v}=\textbf{w}-\overline{\textbf{w}}$, the last relation is therefore equivalent to: $\langle\textbf{u}, \textbf{v}\rangle\langle\textbf{u}, \textbf{v}\rangle > \langle\textbf{u}, \textbf{u}\rangle\langle\textbf{v}, \textbf{v}\rangle$ which contradicts Cauchy–Bunyakovsky–Schwarz inequality.
+	\item $\underline{var(\hat{\gamma}_{X})>var(\hat{\beta}_{X})} \Leftrightarrow \underline{S_{xw}^2<S_{xx}S_{ww}}$ by a similar argument. This explains that by adding a new parameter in a linear model results in an increased variance of the initial parameters.
+\end{itemize}
+
+\newpage
+\section*{Question 2}
+\subsection*{a)}
+To compute the least squares estimators we will use the LinearRegression() model of \textit{sklearn} in python, in order to avoid too long code. It simply calculates the ordinary least squares estimators as $(X^{T}X)^{-1}X^{T}\textbf{Y}$, also handling automatically adding the columns of ones to the design matrix. $\hat{\beta}_0$ and $\hat{\beta}_1$ will therefore be the \textit{intercept} and the \textit{coef} of the model.
+\begin{python}
+	import pandas as pd
+	import numpy as np
+	import matplotlib.pyplot as plt
+	from sklearn.linear_model import LinearRegression
+	
+	# Import data
+	df = pd.read_csv('fev.csv')
+	X = df[['smoke', 'age']]
+	y = df['fev'].values.reshape(-1,1)
+	
+	# 2 (a) #
+	X_fev = df.smoke.values.reshape(-1,1) # Design matrix with only smoke as covariate
+	
+	## Build the model
+	model = LinearRegression() # We use sklearn to avoid long matrix calculation
+	
+	## Fit the model
+	model.fit(X_fev, y)
+	
+	beta0 = model.intercept_[0]
+	beta1 = model.coef_[0][0]
+	
+	print(f'beta0 = {beta0}')
+	print(f'beta1 = {beta1}')
+\end{python}
+\textbf{Output:}
+\begin{python}
+	beta0 = 3.9875804623220583
+	beta1 = -0.71071892386052
+\end{python}
+Moreover, we can compute $E(fev|smoke=1)-E(fev|smoke=2)$ as:
+\begin{python}
+	## Mean difference
+	exp_diff = (beta0 + 1*beta1) - (beta0 + 2*beta1)
+	print('Fev(smokers) - Fev(nonsmokers): {}'.format(exp_diff))
+	##
+\end{python}
+\textbf{Output:}
+\begin{python}
+	Fev(smokers) - Fev(nonsmokers): 0.71071892386052
+\end{python}
+\textbf{Conclusion:}
+According to the estimates, smoking does not seem to impair lung function in children and it even contradicts the initial hypothesis that FEV is should be smaller for smokers. However, we will see that this result is not credible and we have to take into account another covariate: \textit{age}. Explore in \ref{!} more about this.
+
+\subsection*{b)}
+Proceeding similarly as before, we will use \textit{LinearRegression()}.
+\begin{python}
+	# 2 (b)
+	# Recall that X = df[['smoke', 'age']]
+	
+	## Fitting the model
+	model_b = LinearRegression()
+	model_b.fit(X, y)
+	
+	gamma0, gamma1, gamma2 = model_b.intercept_[0], model_b.coef_[0][0], model_b.coef_[0][1]
+	print(f'gamma0 = {gamma0}')
+	print(f'gamma1 = {gamma1}')
+	print(f'gamma2 = {gamma2}')
+	##
+\end{python}
+\textbf{Output:}
+\begin{python}
+	gamma0 = -0.05061671981585736
+	gamma1 = 0.20899487720480997
+	gamma2 = 0.2306045731168579
+\end{python}
+And the mean difference:
+\begin{python}
+	## Mean difference
+	exp_diff = gamma1*1-gamma1*2
+	print('Fev(smokers) - Fev(nonsmokers): {}'.format(exp_diff))
+	##
+\end{python}
+\textbf{Output:}
+\begin{python}
+	Fev(smokers) - Fev(nonsmokers): -0.20899487720480997
+\end{python}
+This results are indeed more realistic and shows that among children, smokers tend to have a \textit{0.2} decrease in FEV compared to non-smokers.\\
+Moreover, according to \textbf{1c)} we should have $\frac{var(\hat{\beta}_{1})}{var(\hat{\gamma}_{1})}<1$. We compute it with the previous formulae: $\frac{var(\hat{\beta}_{1})}{var(\hat{\gamma}_{1})} = 1-\frac{S_{xw}^2}{S_{xx}S_{ww}}$.
+\begin{python}
+	## Variability
+	def S(a: np.array, b: np.array):
+	    '''Return S_{ab} as in the coursework'''
+	    return (a-a.mean()).dot(b-b.mean())
+	
+	print('var(beta1)/var(gamma1) = {}'.format((1-S(X.smoke,X.age)**2/(S(X.smoke,X.smoke)*S(X.age, X.age)))))
+\end{python}
+\textbf{Output:}
+\begin{python}
+	var(beta1)/var(gamma1) = 0.8365799359665773
+	# Which is smaller than 1.
+\end{python}
+
+\subsection*{c)}
+
+\subsection*{d)}
+\newpage
+\begin{appendix}
+\section*{Appendix: values of $a', b' ... i'$} 
+
+\begin{equation*}
+\begin{split}
+	a' & = n \\
+	b' & = n\overline{w} \\
+	c' & = n\overline{x} \\
+	d' & = n\overline{w} \\
+	e' & = \sum{w_{i}^2} = S_{ww}+n\overline{w}^2 \\
+	f' & = \sum{w_{i}x_{i}} = S_{wx} + n\overline{w}\overline{x} \\
+	g' & = n\overline{x} \\
+	h' & = \sum{w_{i}x_{i}} = S_{wx} + n\overline{w}\overline{x} \\
+	i' & = \sum{x_{i}^2} = S_{xx}+n\overline{x}^2 
+\end{split}
+\end{equation*}
+
+\end{appendix}
+
+\end{document}
